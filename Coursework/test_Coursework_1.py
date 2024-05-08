@@ -6,14 +6,14 @@ from Coursework.Coursework_1 import first_five_powers_of_base
 from Coursework.Coursework_1 import first_n_powers
 from Coursework.Coursework_1 import first_seven_fibonnaci
 
-TEST_RANGE = 100
+TEST_RANGE = 1000
 
 
 class Test(TestCase):
     def test_first_n_powers(self):
         for i in range(TEST_RANGE):
-            base = randint(1, TEST_RANGE)
-            n = randint(1, TEST_RANGE)
+            base = randint(-TEST_RANGE, TEST_RANGE)
+            n = randint(-TEST_RANGE, TEST_RANGE)
             result = first_n_powers(base=base, n=n)
             expected = []
             for power in range(1, n + 1):
@@ -22,16 +22,27 @@ class Test(TestCase):
 
     def test_a_times_b(self):
         for i in range(TEST_RANGE):
-            a = randint(1, TEST_RANGE)
-            b = randint(1, TEST_RANGE)
+            a = randint(-TEST_RANGE, TEST_RANGE)
+            b = randint(-TEST_RANGE, TEST_RANGE)
             self.assertEqual(a_times_b(a, b), a * b)
 
     def test_first_five_powers_of_base(self):
         for i in range(TEST_RANGE):
-            base = randint(1, TEST_RANGE)
+            base = randint(-TEST_RANGE, TEST_RANGE)
             result = first_five_powers_of_base(base=base)
             expected = [base, base ** 2, base ** 3, base ** 4, base ** 5]
             self.assertListEqual(result, expected)
+
+    def test_first_five_powers_of_base_zero(self):
+        base = 0
+        result = first_five_powers_of_base(base=base)
+        expected = [base, base ** 2, base ** 3, base ** 4, base ** 5]
+        self.assertListEqual(result, expected)
+
+    def test_first_five_powers_of_base_None(self):
+        base = None
+        result = first_five_powers_of_base(base=base)
+        self.assertIsNone(result)
 
     def test_first_seven_fibonnaci(self):
         result = first_seven_fibonnaci()

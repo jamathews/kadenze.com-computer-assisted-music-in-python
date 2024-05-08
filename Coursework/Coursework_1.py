@@ -5,13 +5,18 @@ def first_n_powers(base, n):
 
 
 def a_times_b(a, b=None):
-    if b:
+    if b is not None:
         return a * b
     else:
         return a
 
 
 def first_five_powers_of_base(base):
+    if base is None:
+        return None
+    elif not base:
+        return [base - base, base - base, base - base, base - base, base - base]
+
     powers_of_base = []
     val = None
     one = base // base
@@ -42,5 +47,6 @@ if __name__ == '__main__':
     # Write a script that prints the first five powers of two, but only uses the digit "3".
     print(first_five_powers_of_base(base=3 - (3 // 3)))
 
-    # Write a script that prints out the first 7 Fibonnaci numbers (1, 1, 2, 3, 5, 8, 13) only using the digit 1. (In the Fibonnaci sequence, each number is the sum of the previous two.)
+    # Write a script that prints out the first 7 Fibonnaci numbers (1, 1, 2, 3, 5, 8, 13)
+    # only using the digit 1. (In the Fibonnaci sequence, each number is the sum of the previous two.)
     print(first_seven_fibonnaci())
