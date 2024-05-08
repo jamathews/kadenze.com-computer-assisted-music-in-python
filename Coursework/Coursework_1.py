@@ -33,7 +33,14 @@ def first_seven_fibonnaci():
 
 
 if __name__ == '__main__':
+    # Write a script that prints out the first five powers of 2 (2, 4, 8, 16, 32).
     print(first_n_powers(base=2, n=5))
+
+    # Write a script that prints the first five powers of two, but only uses the digit "2", no other digits.
     print(first_five_powers_of_base(base=2))
+
+    # Write a script that prints the first five powers of two, but only uses the digit "3".
     print(first_five_powers_of_base(base=3 - (3 // 3)))
+
+    # Write a script that prints out the first 7 Fibonnaci numbers (1, 1, 2, 3, 5, 8, 13) only using the digit 1. (In the Fibonnaci sequence, each number is the sum of the previous two.)
     print(first_seven_fibonnaci())
