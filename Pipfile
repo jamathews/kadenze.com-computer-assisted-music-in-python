@@ -10,6 +10,7 @@ pynput = "*"
 scamp-extensions = "*"
 abjad = "*"
 flake8 = "*"
+numpy = "*"
 
 [dev-packages]
 
