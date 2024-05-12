@@ -1,10 +1,12 @@
 import random
 
 from scamp import *
+from datetime import datetime
+playback_settings.recording_file_path = f"{datetime.now().isoformat()}.wav"
 
 s = Session()
 kit_session = Session(default_soundfont="Emu_Planet_Phatt_Hip_Hop.sf2")
-s.tempo = 90
+s.tempo = 100
 kit_session.tempo = s.tempo
 
 violin = s.new_part("Pizzicato Violin")
@@ -36,7 +38,7 @@ def update_note():
         trend = random.choice([trend_up, trend_down])
     pitch = random.uniform(pitch * trend[0], pitch * trend[1])
     volume = random.uniform(volume * trend[0] ** 2, volume * trend[1] ** 2)
-    length = random.uniform(length * trend[0], length * trend[1])
+    # length = random.uniform(length * trend[0], length * trend[1])
     print(f"{position=}/{duration}, {trend=}, {pitch=}, {volume=}, {length=}")
 
 
