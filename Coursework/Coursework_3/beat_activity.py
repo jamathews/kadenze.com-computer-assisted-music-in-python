@@ -308,7 +308,7 @@ def print_session_info(current_session):
 
 
 def get_session(tempo=120, name=None) -> Session:
-    if not name:
+    if name:
         playback_settings.recording_file_path = name
     s = Session(default_soundfont=SOUNDFONT)
     s.tempo = tempo
