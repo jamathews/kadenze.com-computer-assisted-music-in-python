@@ -5,7 +5,7 @@ from random import uniform
 
 from scamp import *
 
-REPS = 2
+REPS = 4
 SECTION_A_REPS = 8
 SECTION_B_REPS = 4
 
