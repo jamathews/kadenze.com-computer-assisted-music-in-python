@@ -1,7 +1,6 @@
 import math
 from scamp import Session, playback_settings
 
-
 # PRESETS FOR Synths.sf2
 #    Preset[000:000] LD-AcidSQneutral 2 bag(s) from #0
 #    Preset[000:001] LD-DanceTrance 2 bag(s) from #2
@@ -18,25 +17,28 @@ from scamp import Session, playback_settings
 #    Preset[000:012] DY-Synthe 2 bag(s) from #24
 #    Preset[000:013] SupSawA 2 bag(s) from #26
 
+maj_offsets = {
+    0: 0,
+    1: 2,
+    2: 4,
+    3: 5,
+    4: 7,
+    5: 9,
+    6: 11,
+}
 
-def maj(tonic):
-    return {
-        1: tonic + 0,
-        2: tonic + 2,
-        3: tonic + 4,
-        4: tonic + 5,
-        5: tonic + 7,
-        6: tonic + 9,
-        7: tonic + 11,
-        8: tonic + 12,
-        9: tonic + 14,
-        10: tonic + 16,
-        11: tonic + 17,
-        12: tonic + 19,
-        13: tonic + 21,
-        14: tonic + 23,
-        15: tonic + 24,
-    }
+
+class Scale:
+    def __init__(self, tonic):
+        self._tonic = tonic
+
+    def __getitem__(self, item):
+        return self.note(item)
+
+    def note(self, interval):
+        note = self._tonic + maj_offsets[interval % 7] + 12 * (interval // 7)
+        print(note)
+        return note
 
 
 class Melody:
@@ -68,8 +70,10 @@ class Melody:
 
     def play(self):
         start_pitch = 36
-        scale = maj(start_pitch)
+        scale = Scale(start_pitch)
+
         for _ in range(2):
+            print("phrase one")
             self._lead_synth.play_note(scale[6], 0.5, 1)
             self._lead_synth.play_note(scale[7], 0.5, 0.5)
             self._lead_synth.play_note(scale[8], 0.5, 0.5)
@@ -77,6 +81,7 @@ class Melody:
             self._lead_synth.play_note(scale[6], 0.5, 0.5)
             self._lead_synth.play_note(scale[5], 0.5, 1)
 
+            print("phrase two")
             self._lead_synth.play_note(scale[4], 0.5, 1)
             self._lead_synth.play_note(scale[5], 0.5, 0.5)
             self._lead_synth.play_note(scale[6], 0.5, 0.5)
