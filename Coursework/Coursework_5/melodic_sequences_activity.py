@@ -1,3 +1,5 @@
+import random
+
 import math
 from scamp import Session, playback_settings
 
@@ -36,6 +38,7 @@ class Scale:
         return self.note(item)
 
     def note(self, interval):
+        interval -= 1
         note = self._tonic + maj_offsets[interval % 7] + 12 * (interval // 7)
         print(note)
         return note
@@ -89,12 +92,30 @@ class Melody:
             self._lead_synth.play_note(scale[4], 0.5, 0.5)
             self._lead_synth.play_note(scale[5], 0.5, 1)
 
+    def play2(self):
+        tonic = 10
+        for _ in range(5):
+            self.play_trigonometry(tonic)
+            tonic += 7
+            self.play_trigonometry(tonic)
+            tonic -= 2
+
+    def play_trigonometry(self, tonic):
+        scale = Scale(tonic)
+        for i in range(1, 20):
+            pitch = scale[random.randint(1, 24)]
+            volume = (math.cos(i / 10) + 1.01) * 0.1
+            length = (math.sin(i / 5) + 1.01) * 3
+            print(f"{i=}: {pitch=}, {volume=}, {length=}")
+            self._lead_synth.play_note(pitch, volume, length)
+
 
 def main():
-    melody = Melody(instrument="CandyBee", tempo=70)
+    melody = Melody(instrument="SCP-Beeper", tempo=50)
     # melody.print_sounds()
     # melody.hear_all_presets()
-    melody.play()
+    # melody.play()
+    melody.play2()
 
 
 if __name__ == '__main__':
