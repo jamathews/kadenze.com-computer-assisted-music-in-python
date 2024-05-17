@@ -1,10 +1,10 @@
 from random import randint
 from unittest import TestCase
 
-from Coursework.Coursework_1 import a_times_b
-from Coursework.Coursework_1 import first_five_powers_of_base
-from Coursework.Coursework_1 import first_n_powers
-from Coursework.Coursework_1 import first_seven_fibonnaci
+from Coursework.Coursework_1.Coursework_1 import a_times_b
+from Coursework.Coursework_1.Coursework_1 import first_five_powers_of_base
+from Coursework.Coursework_1.Coursework_1 import first_n_powers
+from Coursework.Coursework_1.Coursework_1 import first_seven_fibonnaci
 
 TEST_RANGE = 1000
 
