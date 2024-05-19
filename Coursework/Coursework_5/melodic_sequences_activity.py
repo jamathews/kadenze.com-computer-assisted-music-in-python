@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 
 import math
 from scamp import Session, playback_settings, wait
@@ -45,10 +46,12 @@ class Scale:
 
 
 class Melody:
-    def __init__(self, soundfont="Synths.sf2", wav=None, tempo=90, instrument="LD-AcidSQneutral"):
+    def __init__(self, filename=None, soundfont="Synths.sf2", wav=None, tempo=90, instrument="LD-AcidSQneutral"):
         if wav:
             playback_settings.recording_file_path = wav
 
+        if filename:
+            playback_settings.recording_file_path = filename
         self._session = Session(default_soundfont=soundfont)
         self._session.tempo = tempo
         self._lead_synth = self._session.new_part(instrument)
@@ -134,6 +137,7 @@ class Melody:
             instrument = self._lead_synth
         self._session.tempo = 70
         tonic = 55
+        starting_tonic = tonic
         scale = Scale(tonic)
         intervals = [-1, -2, -3]
         lengths = [0.25, 0.5]
@@ -143,7 +147,7 @@ class Melody:
         while True:
             tonic += random.randint(-3, 4)
             self._session.tempo += random.randint(-5, 5)
-            pitches = sorted(random.choices([scale[i] for i in range(0, 24)], k=12))
+            pitches = sorted(random.choices([scale[i] for i in range(0, 24)], k=16))
             approximate_melody_length = len(pitches) * len(intervals) * 1.5 * sum(lengths) / len(lengths)
 
             chord = [tonic + (12 * octave) for octave in octaves]
@@ -154,22 +158,32 @@ class Melody:
                 wait(0.25)
 
             for index, pitch in enumerate(pitches):
-                instrument.play_note(pitch, 1, 1)
+                instrument.play_note(pitch, 0.8, 1)
                 if index % 2 == 1:
                     for interval in intervals:
                         instrument.play_note(pitch + interval - 12, 0.5, lengths[index % len(lengths)] / 1.9)
                         instrument.play_note(pitch + interval - 12, 0.75, lengths[(index + 1) % len(lengths)] / 2.1)
                 else:
                     wait(0.25)
+            else:
+                instrument.play_note(pitches[0] + 12, 0.8, 4, blocking=False)
+                instrument.play_note(pitches[0], 0.8, 2)
+            wait(0.25)
             instrument.play_note(tonic + 12, 0.75, 4, blocking=False)
             instrument.play_note(tonic + 7, 0.5, 5, blocking=False)
             instrument.play_note(tonic + 4, 0.25, 3, blocking=False)
             instrument.play_note(tonic - 2, 0.25, 8, blocking=False)
             instrument.play_note(tonic - 1, 0.25, 7, blocking=False)
             instrument.play_note(tonic, 0.75, 6, blocking=False)
-            if tonic == 69:
-                break
             wait(4)
+            if tonic % 12 == starting_tonic % 12:
+                pitch = pitches[0]
+                while pitch > 0:
+                    instrument.play_note(pitch, 0.8, 1, blocking=False)
+                    pitch -= 1
+                    self._session.tempo += 1
+                    wait(0.25)
+                break
             # random.shuffle(pitches)
             # random.shuffle(octaves)
             # random.shuffle(intervals)
@@ -177,7 +191,8 @@ class Melody:
 
 
 def main():
-    melody = Melody(instrument="hypersawwave", tempo=80)
+    filename = f"{datetime.now().isoformat()}.wav"
+    melody = Melody(filename=filename, instrument="hypersawwave", tempo=80)
     # melody = Melody(instrument="SCP-Beeper", tempo=80)
     # melody = Melody(instrument="AnalogSaw1", tempo=80)
     # melody = Melody(instrument="DY-Synthe", tempo=80)
