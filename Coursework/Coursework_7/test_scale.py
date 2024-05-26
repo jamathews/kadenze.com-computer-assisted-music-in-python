@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from scale import Scale
+from Coursework.Coursework_7.scale import Scale
 
 
 class TestScale(TestCase):
