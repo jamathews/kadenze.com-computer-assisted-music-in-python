@@ -1,6 +1,5 @@
 from datetime import datetime
 from random import choice
-from random import choices
 from random import randint
 from random import random
 from random import uniform
@@ -8,6 +7,8 @@ from random import uniform
 from scamp import *
 
 from scale import Scale
+
+TONIC = 48
 
 MAX_TEMPO = 90
 MIN_TEMPO = 60
@@ -82,7 +83,8 @@ def ride() -> int:
     return choice(RIDES)
 
 
-def setup(new_parts):
+def setup(config):
+    new_parts = config["parts"]
     if new_parts:
         parts_list = "_".join([part["name"] for part in new_parts.values()])
         tempo = int(uniform(MIN_TEMPO, MAX_TEMPO))
@@ -117,15 +119,15 @@ def false_start_drums(parts):
 
 def false_start_scratch(parts):
     scratch = parts["scratch"]["part"]
-    scratch.play_note(48, 1 / 8, 2)
+    scratch.play_note(TONIC, 1 / 8, 2)
 
     wait(1)
 
-    scratch.play_note(48, 1 / 8, 2)
+    scratch.play_note(TONIC, 1 / 8, 2)
 
 
-def intro_bass(parts):
-    bass = parts["bass"]["part"]
+def intro_bass(config):
+    bass = config["parts"]["bass"]["part"]
 
     # beat 1
     bass.play_note(kick(), 1, 1)
@@ -151,8 +153,8 @@ def intro_bass(parts):
     wait(1 / 4)
 
 
-def intro_drums(parts):
-    drum_kit = parts["drum_kit"]["part"]
+def intro_drums(config):
+    drum_kit = config["parts"]["drum_kit"]["part"]
 
     # beat 1
     drum_kit.play_note(kick(), 1, 1)
@@ -178,8 +180,8 @@ def intro_drums(parts):
     wait(1 / 4)
 
 
-def intro_scratch(parts):
-    scratch = parts["scratch"]["part"]
+def intro_scratch(config):
+    scratch = config["parts"]["scratch"]["part"]
 
     # beat 1
     scratch.play_note(60, 1 / 8, 1 / 4)
@@ -206,11 +208,35 @@ def intro_scratch(parts):
     scratch.play_note(84, 8 / 8, 1 / 4)
 
 
-def section_a_bass(parts):
-    bass = parts["bass"]["part"]
+def section_a_melody(config):
+    lead_synth = config["parts"]["lead_synth"]["part"]
+    scale = config["scale"]
+
+    # beat 1 & 2
+    lead_synth.play_note(scale[randint(8, 16)], 1, 1 / 3)
+    lead_synth.play_note(scale[randint(8, 24)], 7 / 8, 1 / 3)
+    lead_synth.play_note(scale[randint(1, 16)], 3 / 4, 1 / 3)
+
+    # beat 3
+    wait(1 / 4)
+    wait(1 / 4)
+
+    # beat 4
+    wait(1 / 4)
+    if choice([True, False]):
+        lead_synth.play_note(scale[randint(1, 16)], 8 / 10, 1 / 12)
+        lead_synth.play_note(scale[randint(1, 16)], 9 / 10, 1 / 12)
+        lead_synth.play_note(scale[randint(1, 16)], 1, 1 / 12)
+    else:
+        wait(1 / 4)
+
+
+def section_a_bass(config):
+    bass = config["parts"]["bass"]["part"]
+    scale = config["scale"]
 
     # beat 1
-    bass.play_note(48, 1 / 8, 1, blocking=False)
+    bass.play_note(scale[1], 1 / 8, 1, blocking=False)
     wait(1 / 2)
 
     # beat 2
@@ -218,18 +244,18 @@ def section_a_bass(parts):
 
     # beat 3
     wait(1 / 4)
-    bass.play_note(48, 1 / 8, uniform(1 / 8, 3 / 8), blocking=False)
+    bass.play_note(scale[1], 1 / 8, uniform(1 / 8, 3 / 8), blocking=False)
     wait(1 / 4)
 
     # beat 4
     wait(1 / 4)
 
-    bass.play_note(46, 1 / 8, 1 / 4, blocking=False)
+    bass.play_note(scale[-2] - 1, 1 / 8, 1 / 4, blocking=False)
     wait(1 / 4)
 
 
-def section_a_drums(parts):
-    drum_kit = parts["drum_kit"]["part"]
+def section_a_drums(config):
+    drum_kit = config["parts"]["drum_kit"]["part"]
 
     # beat 1
     drum_kit.play_note(crash(), 1, 1 / 2, blocking=False)
@@ -268,8 +294,8 @@ def section_a_drums(parts):
     drum_kit.play_note(hat(), 3 / 4, 1 / 4)
 
 
-def section_a_scratch(parts):
-    scratch = parts["scratch"]["part"]
+def section_a_scratch(config):
+    scratch = config["parts"]["scratch"]["part"]
 
     # beat 1
     wait(1 / 2)
@@ -288,35 +314,64 @@ def section_a_scratch(parts):
     wait(1 / 4)
 
 
-def section_b_bass(parts):
-    bass = parts["bass"]["part"]
+def section_b_melody(config):
+    lead_synth = config["parts"]["lead_synth"]["part"]
+    scale = config["scale"]
 
     # beat 1
-    bass.play_note(60, 1 / 8, uniform(3 / 4, 1), blocking=False)
+    for _ in range(4):
+        lead_synth.play_note(scale[choice([23, 24])], uniform(0.5, 1), 1 / 16)
+        wait(1 / 16)
+
+    # beat 2
+    if choice([True, False]):
+        for _ in range(4):
+            lead_synth.play_note(scale[randint(12, 16)], uniform(0.5, 1), 1 / 8)
+            wait(1 / 8)
+    else:
+        wait(1)
+
+    # beat 3 & 4
+    durations = []
+    while sum(durations) < 2:
+        durations.append(randint(1, 7) / 8)
+    else:
+        if sum(durations) > 2:
+            durations[-1] = 2 - sum(durations[:-1])
+    for duration in durations:
+        lead_synth.play_note(scale[randint(24, 28)], uniform(0.5, 1), duration)
+
+
+def section_b_bass(config):
+    bass = config["parts"]["bass"]["part"]
+    scale = config["scale"]
+
+    # beat 1
+    bass.play_note(scale[8], 1 / 8, uniform(3 / 4, 1), blocking=False)
     wait(1)
 
     # beat 2
     wait(1 / 2)
 
-    bass.play_note(59, 1 / 8, uniform(1 / 4, 3 / 4), blocking=False)
+    bass.play_note(scale[7], 1 / 8, uniform(1 / 4, 3 / 4), blocking=False)
     wait(1 / 2)
 
     # beat 3
     wait(1 / 2)
 
-    bass.play_note(58, 1 / 8, uniform(3 / 8, 5 / 8), blocking=False)
+    bass.play_note(scale[7] - 1, 1 / 8, uniform(3 / 8, 5 / 8), blocking=False)
     wait(1 / 2)
 
     # beat 4
-    bass.play_note(57, 1 / 8, uniform(3 / 8, 5 / 8), blocking=False)
+    bass.play_note(scale[6], 1 / 8, uniform(3 / 8, 5 / 8), blocking=False)
     wait(1 / 2)
 
-    bass.play_note(56, 1 / 8, 1 / 2, blocking=False)
+    bass.play_note(scale[6] - 1, 1 / 8, 1 / 2, blocking=False)
     wait(1 / 2)
 
 
-def section_b_drums(parts):
-    drum_kit = parts["drum_kit"]["part"]
+def section_b_drums(config):
+    drum_kit = config["parts"]["drum_kit"]["part"]
 
     # beat 1
     drum_kit.play_note(kick(), 2 / 4, 1, blocking=False)
@@ -356,8 +411,8 @@ def section_b_drums(parts):
     drum_kit.play_note(ride(), random(), 1 / 4)
 
 
-def section_b_scratch(parts):
-    scratch = parts["scratch"]["part"]
+def section_b_scratch(config):
+    scratch = config["parts"]["scratch"]["part"]
 
     # beat 1
     scratch.play_note(72, 8 / 8, 1 / 4, blocking=False)
@@ -384,28 +439,29 @@ def section_b_scratch(parts):
     wait(1 / 4)
 
 
-def outro_bass(parts):
-    bass = parts["bass"]["part"]
+def outro_bass(config):
+    bass = config["parts"]["bass"]["part"]
+    scale = config["scale"]
 
     # beat 1
-    bass.play_note(60, 2 / 4, 1 / 4)
-    bass.play_note(48, 2 / 4, 1 / 4)
+    bass.play_note(scale[8], 2 / 4, 1 / 4)
+    bass.play_note(scale[1], 2 / 4, 1 / 4)
 
     # beat 2
-    bass.play_note(60, 2 / 4, 1 / 4)
-    bass.play_note(48, 2 / 4, 1 / 4)
+    bass.play_note(scale[8], 2 / 4, 1 / 4)
+    bass.play_note(scale[1], 2 / 4, 1 / 4)
 
     # beat 3
-    bass.play_note(60, 2 / 4, 1 / 6)
-    bass.play_note(53, 2 / 4, 1 / 6)
-    bass.play_note(48, 2 / 4, 1 / 6)
+    bass.play_note(scale[8], 2 / 4, 1 / 6)
+    bass.play_note(scale[4], 2 / 4, 1 / 6)
+    bass.play_note(scale[1], 2 / 4, 1 / 6)
 
     # beat 4
-    bass.play_note(36, 2 / 4, 1 / 2)
+    bass.play_note(scale[-8], 2 / 4, 1 / 2)
 
 
-def outro_drums(parts):
-    drum_kit = parts["drum_kit"]["part"]
+def outro_drums(config):
+    drum_kit = config["parts"]["drum_kit"]["part"]
 
     # beat 1
     drum_kit.play_note(snare(), 2 / 4, 1 / 4, blocking=False)
@@ -438,8 +494,8 @@ def outro_drums(parts):
     wait(1 / 2)
 
 
-def outro_scratch(parts):
-    scratch = parts["scratch"]["part"]
+def outro_scratch(config):
+    scratch = config["parts"]["scratch"]["part"]
 
     # beat 1
     wait(1 / 2)
@@ -452,56 +508,6 @@ def outro_scratch(parts):
 
     # beat 4
     wait(1 / 2)
-
-
-def play_melody(parts):
-    lead_synth = parts["lead_synth"]["part"]
-
-    tonic = 55
-    starting_tonic = tonic
-    scale = Scale(tonic)
-    intervals = [-1, -2, -3]
-    lengths = [0.25, 0.5]
-
-    octaves = [-2, -1, 2, 3]
-
-    while True:
-        tonic += randint(-3, 4)
-        pitches = sorted(choices([scale[i] for i in range(0, 24)], k=16))
-        approximate_melody_length = len(pitches) * len(intervals) * 1.5 * sum(lengths) / len(lengths)
-
-        chord = [tonic + (12 * octave) for octave in octaves]
-
-        for octave in octaves:
-            lead_synth.play_note(tonic + (12 * octave), 0.25, approximate_melody_length, blocking=False)
-            wait(0.25)
-
-        for index, pitch in enumerate(pitches):
-            lead_synth.play_note(pitch, 0.8, 1)
-            if index % 2 == 1:
-                for interval in intervals:
-                    lead_synth.play_note(pitch + interval - 12, 0.5, lengths[index % len(lengths)] / 1.9)
-                    lead_synth.play_note(pitch + interval - 12, 0.75, lengths[(index + 1) % len(lengths)] / 2.1)
-            else:
-                wait(0.25)
-        else:
-            lead_synth.play_note(pitches[0] + 12, 0.8, 4, blocking=False)
-            lead_synth.play_note(pitches[0], 0.8, 2)
-        wait(0.25)
-        lead_synth.play_note(tonic + 12, 0.75, 4, blocking=False)
-        lead_synth.play_note(tonic + 7, 0.5, 5, blocking=False)
-        lead_synth.play_note(tonic + 4, 0.25, 3, blocking=False)
-        lead_synth.play_note(tonic - 2, 0.25, 8, blocking=False)
-        lead_synth.play_note(tonic - 1, 0.25, 7, blocking=False)
-        lead_synth.play_note(tonic, 0.75, 6, blocking=False)
-        wait(4)
-        if tonic % 12 == starting_tonic % 12:
-            pitch = pitches[0]
-            while pitch > 0:
-                lead_synth.play_note(pitch, 0.8, 1, blocking=False)
-                pitch -= 1
-                wait(0.25)
-            break
 
 
 def false_start(s: Session, parts):
@@ -513,75 +519,80 @@ def false_start(s: Session, parts):
     s.wait_for_children_to_finish()
 
 
-def intro(s: Session, parts):
+def intro(s: Session, config):
     print(f"\rIntro", end="")
     fork(print_count, [8, 2])
-    fork(intro_bass, [parts])
-    fork(intro_drums, [parts])
-    fork(intro_scratch, [parts])
+    fork(intro_bass, [config])
+    fork(intro_drums, [config])
+    fork(intro_scratch, [config])
     s.wait_for_children_to_finish()
 
 
-def section_a(s: Session, parts):
+def section_a(s: Session, config):
     print(f"\rSection A", end="")
     fork(print_count, [4, 2])
-    fork(section_a_drums, [parts])
-    fork(section_a_bass, [parts])
-    fork(section_a_scratch, [parts])
+    fork(section_a_drums, [config])
+    fork(section_a_melody, [config])
+    fork(section_a_bass, [config])
+    fork(section_a_scratch, [config])
     s.wait_for_children_to_finish()
 
 
-def section_b(s: Session, parts):
+def section_b(s: Session, config):
     print(f"\rSection B", end="")
     fork(print_count, [8, 2])
-    fork(section_b_drums, [parts])
-    fork(section_b_bass, [parts])
-    fork(section_b_scratch, [parts])
+    fork(section_b_drums, [config])
+    fork(section_b_melody, [config])
+    fork(section_b_bass, [config])
+    fork(section_b_scratch, [config])
     s.wait_for_children_to_finish()
 
 
-def outro(s: Session, parts):
+def outro(s: Session, config):
     print(f"\rOutro", end="")
     fork(print_count, [7, 4])
-    fork(outro_bass, [parts])
-    fork(outro_drums, [parts])
-    fork(outro_scratch, [parts])
+    fork(outro_bass, [config])
+    fork(outro_drums, [config])
+    fork(outro_scratch, [config])
     s.wait_for_children_to_finish()
 
 
 def main():
-    parts = {
-        "drum_kit": {
-            "name": f"Kit {choice(DRUM_KITS_I_LIKE)}",
-            "soundfont": "Emu_Planet_Phatt_Hip_Hop.sf2",
+    config = {
+        "parts": {
+            "drum_kit": {
+                "name": f"Kit {choice(DRUM_KITS_I_LIKE)}",
+                "soundfont": "Emu_Planet_Phatt_Hip_Hop.sf2",
+            },
+            "scratch": {
+                "name": f"Scratch {choice(SCRATCH_KITS_I_LIKE)}",
+                "soundfont": "Emu_Planet_Phatt_Hip_Hop.sf2",
+            },
+            "bass": {
+                "name": f"Fat SynBass",
+                "soundfont": "Emu_Planet_Phatt_Hip_Hop.sf2",
+            },
+            "lead_synth": {
+                "name": f"hypersawwave",
+                "soundfont": "Synths.sf2",
+            },
         },
-        "scratch": {
-            "name": f"Scratch {choice(SCRATCH_KITS_I_LIKE)}",
-            "soundfont": "Emu_Planet_Phatt_Hip_Hop.sf2",
-        },
-        "bass": {
-            "name": f"Fat SynBass",
-            "soundfont": "Emu_Planet_Phatt_Hip_Hop.sf2",
-        },
-        "lead_synth": {
-            "name": f"hypersawwave",
-            "soundfont": "Synths.sf2",
-        },
+        "scale": Scale(TONIC)
     }
 
-    s = setup(parts)
+    s = setup(config)
 
-    intro(s, parts)
+    intro(s, config)
 
     for rep in range(REPS):
         for _ in range(SECTION_A_REPS - 2 * rep):
-            section_a(s, parts)
+            section_a(s, config)
         for _ in range(SECTION_B_REPS - 2 * rep):
-            section_b(s, parts)
+            section_b(s, config)
     for _ in range(SECTION_A_REPS // 2):
-        section_a(s, parts)
+        section_a(s, config)
 
-    outro(s, parts)
+    outro(s, config)
 
 
 if __name__ == '__main__':
