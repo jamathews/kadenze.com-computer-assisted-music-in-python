@@ -88,20 +88,16 @@ def setup(new_parts):
         return main_session
 
 
-def intro(parts):
+def intro_scratch(parts):
     print(f"\rIntro", end="")
-    drum_kit = parts["drum_kit"]["part"]
     scratch = parts["scratch"]["part"]
-    drum_kit.play_note(kick(), 1, 1 / 2, blocking=False)
     scratch.play_note(48, 1 / 8, 2)
 
     wait(1)
 
-    drum_kit.play_note(kick(), 1, 1 / 2, blocking=False)
     scratch.play_note(48, 1 / 8, 2)
 
     print(f" 1", end="")
-    drum_kit.play_note(kick(), 1, 1 / 2, blocking=False)
     scratch.play_note(60, 1 / 8, 1 / 4)
     scratch.play_note(62, 2 / 8, 1 / 4)
     scratch.play_note(64, 3 / 8, 1 / 4)
@@ -114,25 +110,49 @@ def intro(parts):
     scratch.play_note(72, 8 / 8, 1 / 4)
 
     print(f" 3", end="")
-    drum_kit.play_note(kick(), 1, 1 / 2, blocking=False)
     scratch.play_note(72, 1 / 8, 1 / 4)
     scratch.play_note(74, 2 / 8, 1 / 4)
     scratch.play_note(76, 3 / 8, 1 / 4)
     scratch.play_note(77, 4 / 8, 1 / 4)
 
     print(f" 4", end="")
-    drum_kit.play_note(kick(), 1, 1 / 2, blocking=False)
-    drum_kit.play_note(crash(), 1, 1 / 2, blocking=False)
     scratch.play_note(79, 5 / 8, 1 / 4)
-    drum_kit.play_note(kick(), 1, 1 / 2, blocking=False)
-    drum_kit.play_note(crash(), 1, 1 / 2, blocking=False)
     scratch.play_note(81, 6 / 8, 1 / 4)
-    drum_kit.play_note(kick(), 1, 1 / 2, blocking=False)
-    drum_kit.play_note(crash(), 1, 1 / 2, blocking=False)
     scratch.play_note(83, 7 / 8, 1 / 4)
+    scratch.play_note(84, 8 / 8, 1 / 4)
+
+
+def intro_drums(parts):
+    print(f"\rIntro", end="")
+    drum_kit = parts["drum_kit"]["part"]
+    drum_kit.play_note(kick(), 1, 2)
+
+    wait(1)
+
+    drum_kit.play_note(kick(), 1, 2)
+
+    print(f" 1", end="")
+    drum_kit.play_note(kick(), 1, 1)
+
+    print(f" 2", end="")
+    wait(1)
+
+    print(f" 3", end="")
+    drum_kit.play_note(kick(), 1, 1)
+
+    print(f" 4", end="")
     drum_kit.play_note(kick(), 1, 1 / 2, blocking=False)
     drum_kit.play_note(crash(), 1, 1 / 2, blocking=False)
-    scratch.play_note(84, 8 / 8, 1 / 4)
+    wait(1 / 4)
+    drum_kit.play_note(kick(), 1, 1 / 2, blocking=False)
+    drum_kit.play_note(crash(), 1, 1 / 2, blocking=False)
+    wait(1 / 4)
+    drum_kit.play_note(kick(), 1, 1 / 2, blocking=False)
+    drum_kit.play_note(crash(), 1, 1 / 2, blocking=False)
+    wait(1 / 4)
+    drum_kit.play_note(kick(), 1, 1 / 2, blocking=False)
+    drum_kit.play_note(crash(), 1, 1 / 2, blocking=False)
+    wait(1 / 4)
 
 
 def section_a(parts):
@@ -276,7 +296,6 @@ def outro(parts):
 
 
 def play_beat(parts):
-    intro(parts)
     for _ in range(REPS):
         for _ in range(SECTION_A_REPS):
             section_a(parts)
@@ -362,6 +381,9 @@ def main():
 
     s = setup(parts)
 
+    fork(intro_drums, [parts])
+    fork(intro_scratch, [parts])
+    s.wait_for_children_to_finish()
     fork(play_beat, [parts])
     fork(play_melody, [parts])
     s.wait_for_children_to_finish()
