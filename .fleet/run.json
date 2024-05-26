@@ -1,0 +1,15 @@
+{
+    "configurations": [
+        
+        {
+            "name": "putting_it_all_together",
+            "type": "python",
+            "workingDir": "$PROJECT_DIR$/Coursework/Coursework_7",
+            "environment": {
+                "PYTHONUNBUFFERED": "1",
+                "PYTHONPATH": "$PROJECT_DIR$"
+            },
+            "file": "$PROJECT_DIR$/Coursework/Coursework_7/putting_it_all_together.py"
+        }
+    ]
+}
