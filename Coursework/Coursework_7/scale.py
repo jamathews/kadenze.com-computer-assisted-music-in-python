@@ -16,7 +16,12 @@ class Scale:
         return self.note(item)
 
     def note(self, interval):
-        interval -= 1
+        if not interval:
+            raise ValueError('Interval cannot be empty or zero')
+        if interval > 0:
+            interval -= 1
+        elif interval < 0:
+            interval += 1
         note = self._tonic + self.maj_offsets[interval % 7] + 12 * (interval // 7)
         # print(note)
         return note
